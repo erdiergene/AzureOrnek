@@ -4,7 +4,10 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/xcode
 
 trigger:
-- main
+ branches:
+    include:
+    - master
+    - main
 
 pool:
    name: 'Default'
