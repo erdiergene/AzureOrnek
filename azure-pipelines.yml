@@ -1,5 +1,5 @@
 variables:
-  buildScheme: ''  # Uygulamanızın Xcode scheme'ini buraya girin.
+  buildScheme: 'AzureOrnek'  # Uygulamanızın Xcode scheme'ini buraya girin.
   buildSdk: 'iphoneos'
   buildConfiguration: 'Release'
   workspacePath: '**/*.xcodeproj'  # Eğer bir workspace kullanıyorsanız, burayı ayarlayın.
