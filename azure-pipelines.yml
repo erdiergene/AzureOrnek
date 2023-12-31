@@ -28,9 +28,7 @@ pool:
 steps:
 - checkout: self
 
-- task: CocoaPods@0
-  inputs:
-    forceRepoUpdate: true
+
 
 - task: Xcode@5
   inputs:
