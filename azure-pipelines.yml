@@ -4,21 +4,21 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/xcode
 
 trigger:
- branches:
+  branches:
     include:
     - master
     - main
-    -develop
+    - develop
 
 pool:
-   name: 'Default'
+  name: 'Default'
 
 steps:
 - task: Xcode@5
   inputs:
     actions: 'build'
-    scheme: ''
+    scheme: ''  # Burada bir scheme ismi belirtmeniz gerekebilir.
     sdk: 'iphoneos'
     configuration: 'Release'
-    xcWorkspacePath: 'AzureOrnek.xcodeproj'
-    xcodeVersion: 'default' # Options: 8, 9, 10, 11, 12, default, specifyPath
+    xcWorkspacePath: '**/*.xcodeproj'  # Eğer bir workspace kullanmıyorsanız, burayı projenizin adıyla değiştirin.
+    xcodeVersion: 'default'  # Options: 8, 9, 10, 11, 12, default, specifyPath
