@@ -17,6 +17,7 @@ class ViewController: UIViewController {
         print("Log erdi2")
         print("Log erd3")
         print("Log erd4")
+        print("Log erd5")
         // Do any additional setup after loading the view.
     }
 
