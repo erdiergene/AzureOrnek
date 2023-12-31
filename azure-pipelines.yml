@@ -39,7 +39,7 @@ steps:
     xcWorkspacePath: $(workspacePath)
     xcodeVersion: $(xcodeVer)
 
-
+- task: Xcode@5
   inputs:
     actions: 'archive'
     scheme: $(buildScheme)
