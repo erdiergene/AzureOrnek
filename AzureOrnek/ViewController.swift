@@ -13,6 +13,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         print("log")
         print("Log erdi")
+        print("Log erdi")
         // Do any additional setup after loading the view.
     }
 
