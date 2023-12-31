@@ -26,6 +26,12 @@ pool:
   name: 'Default'
 
 steps:
+- checkout: self
+
+- task: CocoaPods@0
+  inputs:
+    forceRepoUpdate: true
+
 - task: Xcode@5
   inputs:
     actions: 'build'
@@ -34,4 +40,40 @@ steps:
     configuration: $(buildConfiguration)
     xcWorkspacePath: $(workspacePath)
     xcodeVersion: $(xcodeVer)
+
+- task: Xcode@5
+  inputs:
+    actions: 'test'
+    scheme: $(buildScheme)
+    sdk: $(buildSdk)
+    configuration: $(buildConfiguration)
+    xcWorkspacePath: $(workspacePath)
+    xcodeVersion: $(xcodeVer)
+
+- task: Xcode@5
+  inputs:
+    actions: 'archive'
+    scheme: $(buildScheme)
+    sdk: $(buildSdk)
+    configuration: $(buildConfiguration)
+    xcWorkspacePath: $(workspacePath)
+    xcodeVersion: $(xcodeVer)
+    packageApp: true
+    archivePath: '$(Build.ArtifactStagingDirectory)/$(buildScheme).xcarchive'
+
+- task: Xcode@5
+  inputs:
+    actions: 'export'
+    sdk: $(buildSdk)
+    xcWorkspacePath: $(workspacePath)
+    xcodeVersion: $(xcodeVer)
+    exportOptionsPlist: 'path/to/your/exportOptions.plist'
+    archivePath: '$(Build.ArtifactStagingDirectory)/$(buildScheme).xcarchive'
+    exportPath: '$(Build.ArtifactStagingDirectory)/ipa'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/ipa'
+    ArtifactName: 'app'
+    publishLocation: 'Container'
 
