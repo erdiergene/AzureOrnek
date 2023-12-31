@@ -1,7 +1,9 @@
-# Xcode
-# Build, test, and archive an Xcode workspace on macOS.
-# Add steps that install certificates, test, sign, and distribute an app, save build artifacts, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/xcode
+variables:
+  buildScheme: ''  # Uygulamanızın Xcode scheme'ini buraya girin.
+  buildSdk: 'iphoneos'
+  buildConfiguration: 'Release'
+  workspacePath: '**/*.xcodeproj'  # Eğer bir workspace kullanıyorsanız, burayı ayarlayın.
+  xcodeVer: 'default'  # Seçenekler: 8, 9, 10, 11, 12, default, specifyPath
 
 trigger:
   branches:
@@ -10,6 +12,16 @@ trigger:
     - main
     - develop
 
+schedules:
+  - cron: "0 0 * * *"
+    displayName: Daily midnight build
+    branches:
+      include:
+      - master
+      - main
+      - develop
+    always: true
+
 pool:
   name: 'Default'
 
@@ -17,8 +29,9 @@ steps:
 - task: Xcode@5
   inputs:
     actions: 'build'
-    scheme: ''  # Burada bir scheme ismi belirtmeniz gerekebilir.
-    sdk: 'iphoneos'
-    configuration: 'Release'
-    xcWorkspacePath: '**/*.xcodeproj'  # Eğer bir workspace kullanmıyorsanız, burayı projenizin adıyla değiştirin.
-    xcodeVersion: 'default'  # Options: 8, 9, 10, 11, 12, default, specifyPath
+    scheme: $(buildScheme)
+    sdk: $(buildSdk)
+    configuration: $(buildConfiguration)
+    xcWorkspacePath: $(workspacePath)
+    xcodeVersion: $(xcodeVer)
+
