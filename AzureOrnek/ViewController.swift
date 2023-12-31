@@ -11,6 +11,8 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("log")
+        print("Log erdi")
         print("Log erdi")
         print("Log erdi2")
         // Do any additional setup after loading the view.

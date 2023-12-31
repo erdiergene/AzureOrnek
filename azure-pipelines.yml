@@ -1,5 +1,5 @@
 variables:
-  buildScheme: ''  # Uygulamanızın Xcode scheme'ini buraya girin.
+  buildScheme: 'AzureOrnek'  # Uygulamanızın Xcode scheme'ini buraya girin.
   buildSdk: 'iphoneos'
   buildConfiguration: 'Release'
   workspacePath: '**/*.xcodeproj'  # Eğer bir workspace kullanıyorsanız, burayı ayarlayın.
@@ -26,6 +26,10 @@ pool:
   name: 'Default'
 
 steps:
+- checkout: self
+
+
+
 - task: Xcode@5
   inputs:
     actions: 'build'
@@ -34,4 +38,31 @@ steps:
     configuration: $(buildConfiguration)
     xcWorkspacePath: $(workspacePath)
     xcodeVersion: $(xcodeVer)
+
+- task: Xcode@5
+  inputs:
+    actions: 'archive'
+    scheme: $(buildScheme)
+    sdk: $(buildSdk)
+    configuration: $(buildConfiguration)
+    xcWorkspacePath: $(workspacePath)
+    xcodeVersion: $(xcodeVer)
+    packageApp: true
+    archivePath: '$(Build.ArtifactStagingDirectory)/$(buildScheme).xcarchive'
+
+- task: Xcode@5
+  inputs:
+    actions: 'export'
+    sdk: $(buildSdk)
+    xcWorkspacePath: $(workspacePath)
+    xcodeVersion: $(xcodeVer)
+    exportOptionsPlist: 'path/to/your/exportOptions.plist'
+    archivePath: '$(Build.ArtifactStagingDirectory)/$(buildScheme).xcarchive'
+    exportPath: '$(Build.ArtifactStagingDirectory)/ipa'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/ipa'
+    ArtifactName: 'app'
+    publishLocation: 'Container'
 
