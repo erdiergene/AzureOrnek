@@ -8,6 +8,7 @@ trigger:
     include:
     - master
     - main
+    -develop
 
 pool:
    name: 'Default'
