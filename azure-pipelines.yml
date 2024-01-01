@@ -24,13 +24,17 @@ pool:
 steps:
 - checkout: self
 
+##macOS agent üzerinde gereken Apple sertifikasını yükler. Bu adım, iOS uygulamasını imzalamak için gerekli sertifikayı kurar.
 - task: InstallAppleCertificate@2
   displayName: 'iOS Apple certificate installation'
   inputs:
     certSecureFile: 'distribution.p12'
     certPwd: '$(p12Password)' # Bu, Azure DevOps Secret Variables'da tanımlı olmalı
     opensslPkcsArgs: '-legacy'
+    
+    ##. -legacy seçeneği, OpenSSL'in eski şifreleme algoritmalarını desteklemesi için kullanılır. Bu durum, yüklenmeye çalışılan sertifika dosyasının eski bir şifreleme algoritması kullanarak oluşturulmuş olması durumunda gerekebilir.
 
+#InstallAppleProvisioningProfile@1: Belirtilen provisioning profilini yükler. Bu profil, uygulamanın hangi cihazlara yüklenebileceği ve imza kimlik bilgileri gibi bilgileri içerir.
 - task: InstallAppleProvisioningProfile@1
   displayName: 'iOS Apple provisioning profile installation'
   inputs:
@@ -50,7 +54,12 @@ steps:
     signingOption: 'manual'
     signingIdentity: '$(APPLE_CERTIFICATE_SIGNING_IDENTITY)'
     provisioningProfileUuid: '$(APPLE_PROV_PROFILE_UUID)'
+    ##packageApp: true: Derleme sonucunda bir .ipa paket dosyasının oluşturulmasını sağlar.
+##signingOption: 'manual': Manuel imzalama seçeneğini etkinleştirir, bu da belirtilen sertifika ve provisioning profilinin kullanılacağı anlamına gelir.
+##signingIdentity: '$(APPLE_CERTIFICATE_SIGNING_IDENTITY)': İmzalama işlemi için kullanılacak sertifikanın adını belirten bir değişken.
+##provisioningProfileUuid: '$(APPLE_PROV_PROFILE_UUID)': İmzalama işlemi için kullanılacak provisioning profilinin UUID'sini belirten bir değişken.
 
+##CopyFiles@2: Build işlemi tarafından oluşturulan .ipa dosyasını, daha sonra yayınlamak üzere bir dizine kopyalar.
 - task: CopyFiles@2
   displayName: 'iOS copy ipa file to upload'
   inputs:
@@ -60,12 +69,28 @@ steps:
     OverWrite: true
     flattenFolders: true
   condition: succeededOrFailed()
+  ##task: CopyFiles@2: Azure DevOps'un CopyFiles görevinin ikinci versiyonunu kullanarak dosyaları bir konumdan başka bir konuma kopyalar.
+##displayName: 'iOS copy ipa file to upload': Görevin Azure DevOps kullanıcı arayüzünde gösterilecek adıdır. Bu etiket, görevin ne yaptığını anlamayı kolaylaştırır ve işlem sürecinin takibini sağlar.
+#3inputs: Bu bölüm, göreve girdi olarak sağlanan parametreleri içerir:
+##SourceFolder: '$(system.defaultworkingdirectory)': Kopyalama işleminin başlayacağı kaynak klasörü belirtir. Bu örnekte, pipeline'ın çalıştığı varsayılan dizindir.
+##Contents: '**/*.ipa': Hangi dosyaların kopyalanacağını belirtir. Burada, tüm alt klasörlerdeki .ipa uzantılı dosyaları kopyalamak için bir joker karakter kullanılıyor.
+##TargetFolder: '$(build.artifactStagingDirectory)': Kopyalanan dosyaların yerleştirileceği hedef klasörü belirtir. Bu genellikle build sanatlarının (artifacts) geçici olarak saklandığı yerdir.
+##OverWrite: true: Var olan dosyaların üzerine yazılmasına izin verir.
+##flattenFolders: true: Tüm dosyaların hedef klasöre alt klasör yapısını korumadan kopyalanmasını sağlar.#
+##condition: succeededOrFailed(): Bu görevin ne zaman çalıştırılacağını belirler. succeededOrFailed() koşulu, önceki adımlar başarılı olsa da olmasa da bu görevin çalıştırılacağını belirtir.
 
+##PublishBuildArtifacts@1: Build işlemi sonucunda elde edilen sanatları (örneğin .ipa dosyası) Azure DevOps'taki artifact deposuna yükler.
 - task: PublishBuildArtifacts@1
   displayName: 'iOS publish ipa to artifacts'
   inputs:
     PathtoPublish: '$(build.artifactStagingDirectory)'
   condition: succeededOrFailed()
+  
+  ##task: PublishBuildArtifacts@1: Azure DevOps'un PublishBuildArtifacts görevinin birinci versiyonunu kullanarak build işlemi sonucu oluşturulan dosyaları (sanatları) depolar. Bu görev, build sonrası oluşturulan dosyaların (örneğin .ipa dosyaları, loglar, raporlar vb.) saklanması ve sonraki işlemlerde (örneğin deployment) kullanılması için önemlidir.
+##displayName: 'iOS publish ipa to artifacts': Görevin Azure DevOps kullanıcı arayüzünde gösterilecek adıdır. Bu etiket, görevin işlevini anlamayı kolaylaştırır ve sürecin izlenmesine yardımcı olur.
+##inputs: Bu bölüm, göreve girdi olarak sağlanan parametreleri içerir:
+##PathtoPublish: '$(build.artifactStagingDirectory)': Bu, build işlemi sonucunda oluşturulan sanatların nereden alınacağını belirtir. $(build.artifactStagingDirectory) Azure DevOps tarafından otomatik olarak ayarlanan, build süreci sırasında sanatların geçici olarak saklandığı dizindir.
+c##ondition: succeededOrFailed(): Bu görevin ne zaman çalıştırılacağını belirler. succeededOrFailed() koşulu, önceki adımlar başarılı olsa da olmasa da bu görevin çalıştırılacağını belirtir. Yani, build işlemi başarısız olsa bile, bu adım çalışarak oluşturulan sanatları (varsa) saklar.
 
 #- task: AppCenterDistribute@3
 #  displayName: 'iOS AppCenter distribution'
