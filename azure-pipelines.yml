@@ -1,4 +1,3 @@
-
 # Contact Azure admin to add your variables to variable group
 variables:
 - group: MobileAppsVariableGroup
@@ -7,7 +6,6 @@ variables:
   buildConfiguration: 'Release'
   workspacePath: '**/*.xcodeproj'  # Eğer bir workspace kullanıyorsanız, burayı ayarlayın.
   xcodeVer: 'default'  # Seçenekler: 8, 9, 10, 11, 12, default, specifyPath
-
 
 trigger:
   branches:
@@ -32,7 +30,6 @@ pool:
 steps:
 - checkout: self
 
-
 # Contact Azure admin to upload your p12 file to Azure Secure Files if needed
 # Change "certSecureFile" field with p12 certificate name
 - task: InstallAppleCertificate@2
@@ -48,7 +45,7 @@ steps:
   displayName: 'iOS Apple provisioning profile installation'
   inputs:
     provisioningProfileLocation: 'secureFiles'
-    provProfileSecureFile: 'adhocmobileprovision.p12'
+    provProfileSecureFile: 'adhoc.mobileprovision'
 
 # Change xcWorkspacePath with project workspace path
 # Change scheme with project scheme
@@ -60,7 +57,7 @@ steps:
     configuration: 'Release'
     sdk: 'iphoneos'
     xcWorkspacePath: $(workspacePath)
-    scheme: 'AzureOrnek'
+    scheme: $(buildScheme)
     xcodeVersion: $(xcodeVer)
     packageApp: true
     signingOption: 'manual'
@@ -86,9 +83,10 @@ steps:
 - task: AppCenterDistribute@3
   displayName: 'iOS AppCenter distribution'
   inputs:
-   serverEndpoint: 'AzureDevOps'
-   appSlug: 'AppSlupFromAppCenter'
-   appFile: '$(build.ArtifactStagingDirectory)/*.ipa'
-   symbolsIncludeParentDirectory: false
-   releaseNotesOption: 'input'
-   releaseNotesInput: '$(Build.SourceVersionMessage)'
+    serverEndpoint: 'AzureDevOps'
+    appSlug: 'AppSlugFromAppCenter'  # Doğru App Slug değerini girin
+    appFile: '$(build.ArtifactStagingDirectory)/*.ipa'
+    symbolsIncludeParentDirectory: false
+    releaseNotesOption: 'input'
+    releaseNotesInput: '$(Build.SourceVersionMessage)'
+
