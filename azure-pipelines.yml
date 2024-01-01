@@ -44,11 +44,11 @@ steps:
 
 # Contact Azure admin to upload your mobileprovision file to Azure Secure Files if needed
 # Change "provProfileSecureFile" field with mobileprovision name
-- task: InstallAppleProvisioningProfile@1
-  displayName: 'iOS Apple provisioning profile installation'
-  inputs:
-    provisioningProfileLocation: 'secureFiles'
-    provProfileSecureFile: 'adhocmobileprovision.p12'
+#- task: InstallAppleProvisioningProfile@1
+#  displayName: 'iOS Apple provisioning profile installation'
+#  inputs:
+#    provisioningProfileLocation: 'secureFiles'
+#    provProfileSecureFile: 'adhocmobileprovision.p12'
 
 # Change xcWorkspacePath with project workspace path
 # Change scheme with project scheme
@@ -60,7 +60,7 @@ steps:
     configuration: 'Release'
     sdk: 'iphoneos'
     xcWorkspacePath: $(workspacePath)
-    scheme: ''
+    scheme: 'AzureOrnek'
     xcodeVersion: $(xcodeVer)
     packageApp: true
     signingOption: 'manual'
