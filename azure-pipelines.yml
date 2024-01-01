@@ -1,11 +1,5 @@
-# Contact Azure admin to add your variables to variable group
 variables:
 - group: MobileAppsVariableGroup
-  buildScheme: 'AzureOrnek'  # Uygulamanızın Xcode scheme'ini buraya girin.
-  buildSdk: 'iphoneos'
-  buildConfiguration: 'Release'
-  workspacePath: '**/*.xcodeproj'  # Eğer bir workspace kullanıyorsanız, burayı ayarlayın.
-  xcodeVer: 'default'  # Seçenekler: 8, 9, 10, 11, 12, default, specifyPath
 
 trigger:
   branches:
@@ -30,35 +24,27 @@ pool:
 steps:
 - checkout: self
 
-# Contact Azure admin to upload your p12 file to Azure Secure Files if needed
-# Change "certSecureFile" field with p12 certificate name
 - task: InstallAppleCertificate@2
   displayName: 'iOS Apple certificate installation'
   inputs:
     certSecureFile: 'distribution.p12'
-    certPwd: '$(Cert.p12)'
-    keychain: 'temp'
+    certPwd: '$(p12Password)' # Bu, Azure DevOps Secret Variables'da tanımlı olmalı
 
-# Contact Azure admin to upload your mobileprovision file to Azure Secure Files if needed
-# Change "provProfileSecureFile" field with mobileprovision name
 - task: InstallAppleProvisioningProfile@1
   displayName: 'iOS Apple provisioning profile installation'
   inputs:
     provisioningProfileLocation: 'secureFiles'
     provProfileSecureFile: 'adhoc.mobileprovision'
 
-# Change xcWorkspacePath with project workspace path
-# Change scheme with project scheme
-# Change xcodeVersion if needed
 - task: Xcode@5
   displayName: 'iOS Xcode build'
   inputs:
     actions: 'clean build'
     configuration: 'Release'
     sdk: 'iphoneos'
-    xcWorkspacePath: $(workspacePath)
-    scheme: $(buildScheme)
-    xcodeVersion: $(xcodeVer)
+    xcWorkspacePath: '**/*.xcodeproj' # Workspace kullanıyorsanız burayı güncelleyin
+    scheme: 'AzureOrnek' # Scheme adını doğrudan buraya yazın
+    xcodeVersion: 'default' # Kullanmak istediğiniz Xcode sürümüne güncelleyin
     packageApp: true
     signingOption: 'manual'
     signingIdentity: '$(APPLE_CERTIFICATE_SIGNING_IDENTITY)'
@@ -84,7 +70,7 @@ steps:
   displayName: 'iOS AppCenter distribution'
   inputs:
     serverEndpoint: 'AzureDevOps'
-    appSlug: 'AppSlugFromAppCenter'  # Doğru App Slug değerini girin
+    appSlug: 'AppSlugFromAppCenter'  # Bu değeri App Center'daki uygulamanızın slug'ı ile değiştirin
     appFile: '$(build.ArtifactStagingDirectory)/*.ipa'
     symbolsIncludeParentDirectory: false
     releaseNotesOption: 'input'
