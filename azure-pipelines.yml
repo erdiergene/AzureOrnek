@@ -66,13 +66,13 @@ steps:
     PathtoPublish: '$(build.artifactStagingDirectory)'
   condition: succeededOrFailed()
 
-- task: AppCenterDistribute@3
-  displayName: 'iOS AppCenter distribution'
-  inputs:
-    serverEndpoint: 'AzureDevOps'
-    appSlug: 'AppSlugFromAppCenter'  # Bu değeri App Center'daki uygulamanızın slug'ı ile değiştirin
-    appFile: '$(build.ArtifactStagingDirectory)/*.ipa'
-    symbolsIncludeParentDirectory: false
-    releaseNotesOption: 'input'
-    releaseNotesInput: '$(Build.SourceVersionMessage)'
+#- task: AppCenterDistribute@3
+#  displayName: 'iOS AppCenter distribution'
+#  inputs:
+#    serverEndpoint: 'AzureDevOps'
+#    appSlug: 'AppSlugFromAppCenter'  # Bu değeri App Center'daki uygulamanızın slug'ı ile değiştirin
+#    appFile: '$(build.ArtifactStagingDirectory)/*.ipa'
+#    symbolsIncludeParentDirectory: false
+#    releaseNotesOption: 'input'
+#    releaseNotesInput: '$(Build.SourceVersionMessage)'
 
