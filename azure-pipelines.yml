@@ -29,6 +29,7 @@ steps:
   inputs:
     certSecureFile: 'distribution.p12'
     certPwd: '1' # Bu, Azure DevOps Secret Variables'da tanımlı olmalı
+    opensslPkcsArgs: '-legacy'
 
 - task: InstallAppleProvisioningProfile@1
   displayName: 'iOS Apple provisioning profile installation'
