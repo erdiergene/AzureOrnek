@@ -92,13 +92,13 @@ steps:
 ##PathtoPublish: '$(build.artifactStagingDirectory)': Bu, build işlemi sonucunda oluşturulan sanatların nereden alınacağını belirtir. $(build.artifactStagingDirectory) Azure DevOps tarafından otomatik olarak ayarlanan, build süreci sırasında sanatların geçici olarak saklandığı dizindir.
 ##condition: succeededOrFailed(): Bu görevin ne zaman çalıştırılacağını belirler. succeededOrFailed() koşulu, önceki adımlar başarılı olsa da olmasa da bu görevin çalıştırılacağını belirtir. Yani, build işlemi başarısız olsa bile, bu adım çalışarak oluşturulan sanatları (varsa) saklar.
 
-- task: AppCenterDistribute@3
-  displayName: 'iOS AppCenter distribution'
-  inputs:
-    serverEndpoint: 'AzureDevOps'
-    appSlug: 'erdieergene/Azure-Ornek1'  # Bu değeri App Center'daki uygulamanızın slug'ı ile değiştirin
-    appFile: '$(build.ArtifactStagingDirectory)/*.ipa'
-    symbolsIncludeParentDirectory: false
-    releaseNotesOption: 'input'
-    releaseNotesInput: '$(Build.SourceVersionMessage)'
+#- task: AppCenterDistribute@3
+#  displayName: 'iOS AppCenter distribution'
+#  inputs:
+#    serverEndpoint: 'AzureDevOps'
+#    appSlug: 'erdieergene/Azure-Ornek1'  # Bu değeri App Center'daki uygulamanızın slug'ı ile değiştirin
+#    appFile: '$(build.ArtifactStagingDirectory)/*.ipa'
+#    symbolsIncludeParentDirectory: false
+#    releaseNotesOption: 'input'
+#    releaseNotesInput: '$(Build.SourceVersionMessage)'
 
