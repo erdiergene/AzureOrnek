@@ -28,7 +28,7 @@ steps:
   displayName: 'iOS Apple certificate installation'
   inputs:
     certSecureFile: 'distribution.p12'
-    certPwd: '$(p12Password)' # Bu, Azure DevOps Secret Variables'da tanımlı olmalı
+    certPwd: '1' # Bu, Azure DevOps Secret Variables'da tanımlı olmalı
 
 - task: InstallAppleProvisioningProfile@1
   displayName: 'iOS Apple provisioning profile installation'
