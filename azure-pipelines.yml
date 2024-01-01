@@ -1,9 +1,13 @@
+
+# Contact Azure admin to add your variables to variable group
 variables:
+- group: MobileAppsVariableGroup
   buildScheme: 'AzureOrnek'  # Uygulamanızın Xcode scheme'ini buraya girin.
   buildSdk: 'iphoneos'
   buildConfiguration: 'Release'
   workspacePath: '**/*.xcodeproj'  # Eğer bir workspace kullanıyorsanız, burayı ayarlayın.
   xcodeVer: 'default'  # Seçenekler: 8, 9, 10, 11, 12, default, specifyPath
+
 
 trigger:
   branches:
@@ -29,40 +33,62 @@ steps:
 - checkout: self
 
 
-
-- task: Xcode@5
+# Contact Azure admin to upload your p12 file to Azure Secure Files if needed
+# Change "certSecureFile" field with p12 certificate name
+- task: InstallAppleCertificate@2
+  displayName: 'iOS Apple certificate installation'
   inputs:
-    actions: 'build'
-    scheme: $(buildScheme)
-    sdk: $(buildSdk)
-    configuration: $(buildConfiguration)
-    xcWorkspacePath: $(workspacePath)
-    xcodeVersion: $(xcodeVer)
+    certSecureFile: 'distribution.p12'
+    certPwd: '$(Cert.p12)'
+    keychain: 'temp'
 
-- task: Xcode@5
+# Contact Azure admin to upload your mobileprovision file to Azure Secure Files if needed
+# Change "provProfileSecureFile" field with mobileprovision name
+- task: InstallAppleProvisioningProfile@1
+  displayName: 'iOS Apple provisioning profile installation'
   inputs:
-    actions: 'archive'
-    scheme: $(buildScheme)
-    sdk: $(buildSdk)
-    configuration: $(buildConfiguration)
+    provisioningProfileLocation: 'secureFiles'
+    provProfileSecureFile: 'adhocmobileprovision.p12'
+
+# Change xcWorkspacePath with project workspace path
+# Change scheme with project scheme
+# Change xcodeVersion if needed
+- task: Xcode@5
+  displayName: 'iOS Xcode build'
+  inputs:
+    actions: 'clean build'
+    configuration: 'Release'
+    sdk: 'iphoneos'
     xcWorkspacePath: $(workspacePath)
+    scheme: ''
     xcodeVersion: $(xcodeVer)
     packageApp: true
-    archivePath: '$(Build.ArtifactStagingDirectory)/$(buildScheme).xcarchive'
+    signingOption: 'manual'
+    signingIdentity: '$(APPLE_CERTIFICATE_SIGNING_IDENTITY)'
+    provisioningProfileUuid: '$(APPLE_PROV_PROFILE_UUID)'
 
-- task: Xcode@5
+- task: CopyFiles@2
+  displayName: 'iOS copy ipa file to upload'
   inputs:
-    actions: 'export'
-    sdk: $(buildSdk)
-    xcWorkspacePath: $(workspacePath)
-    xcodeVersion: $(xcodeVer)
-    exportOptionsPlist: 'path/to/your/exportOptions.plist'
-    archivePath: '$(Build.ArtifactStagingDirectory)/$(buildScheme).xcarchive'
-    exportPath: '$(Build.ArtifactStagingDirectory)/ipa'
+    SourceFolder: '$(system.defaultworkingdirectory)'
+    Contents: '**/*.ipa'
+    TargetFolder: '$(build.artifactStagingDirectory)'
+    OverWrite: true
+    flattenFolders: true
+  condition: succeededOrFailed()
 
 - task: PublishBuildArtifacts@1
+  displayName: 'iOS publish ipa to artifacts'
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/ipa'
-    ArtifactName: 'app'
-    publishLocation: 'Container'
+    PathtoPublish: '$(build.artifactStagingDirectory)'
+  condition: succeededOrFailed()
 
+- task: AppCenterDistribute@3
+  displayName: 'iOS AppCenter distribution'
+  inputs:
+   serverEndpoint: 'AzureDevOps'
+   appSlug: 'AppSlupFromAppCenter'
+   appFile: '$(build.ArtifactStagingDirectory)/*.ipa'
+   symbolsIncludeParentDirectory: false
+   releaseNotesOption: 'input'
+   releaseNotesInput: '$(Build.SourceVersionMessage)'
