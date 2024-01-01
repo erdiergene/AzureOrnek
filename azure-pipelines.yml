@@ -102,7 +102,7 @@ steps:
 #    releaseNotesOption: 'input'
 #    releaseNotesInput: '$(Build.SourceVersionMessage)'
 
- -task: ms-vsclient.app-store.app-store-release.AppStoreRelease@1
+ - task: ms-vsclient.app-store.app-store-release.AppStoreRelease@1
   displayName: 'Publish to the App Store TestFlight track'
   inputs:
     serviceEndpoint: 'App Store Connect'
