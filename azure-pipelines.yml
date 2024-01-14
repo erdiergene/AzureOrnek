@@ -67,11 +67,11 @@ steps:
     PathtoPublish: '$(build.artifactStagingDirectory)'
   condition: succeededOrFailed()
 
-- task: ms-vsclient.app-store.app-store-release.AppStoreRelease@1
-  displayName: 'Publish to the App Store TestFlight track'
-  inputs:
-    serviceEndpoint: 'App Store Connect'
-    appIdentifier: com.ergene.AzureOrnek
-    shouldSkipWaitingForProcessing: true
-    shouldSkipSubmission: true
-
+#- task: ms-vsclient.app-store.app-store-release.AppStoreRelease@1
+#  displayName: 'Publish to the App Store TestFlight track'
+#  inputs:
+#    serviceEndpoint: 'App Store Connect'
+#    appIdentifier: com.ergene.AzureOrnek
+#    shouldSkipWaitingForProcessing: true
+#    shouldSkipSubmission: true
+#
